@@ -34,11 +34,11 @@ An object of class "indexevent" which contains:
   \itemize{
     \item{\code{ybeta.adj} Adjusted effects on the subsequent trait}
     \item{\code{yse.adj} Adjusted standard errors of \code{ybeta.adj}}
-    \item{\code{ychisq.adj} Chi-square statistics for \code{ybeta.adj/yse.adj}}
+    \item{\code{ychisq.adj} Chi-square statistics for \code{(ybeta.adj/yse.adj)^2}}
     \item{\code{yp.adj} P-values for \code{ychisq.adj} on 1df}
-    \item{\code{b} Coefficient of the regression of \code{ybeta} on \code{xbeta}, after correction for regression dilution}
+    \item{\code{b} Coefficient of the regression of \code{ybeta[prune]} on \code{xbeta[prune]}, after correction for regression dilution}
     \item{\code{b.se} Standard error of \code{b}}
-    \item{\code{b.ci} Lower and upper confidence intervals for \code{b}}
+    \item{\code{b.ci} Lower and upper confidence limits for \code{b}}
     \item{\code{b.raw} Regression coefficient without correction for regression dilution}
     \item{\code{simex.estimates} Regression coefficients under simulated measurement error}
   }
