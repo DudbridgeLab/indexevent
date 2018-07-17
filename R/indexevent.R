@@ -14,7 +14,8 @@
 #' @param xse Vector of standard errors of \code{xbeta}
 #' @param ybeta Vector of effects on the subsequent trait
 #' @param yse Vector of standard errors of \code{ybeta}
-#' @param prune Vector containing the indices of an approximately independent subset of the predictors in \code{xbeta} and \code{ybeta}
+#' @param prune Vector containing the indices of an approximately independent subset of the predictors in \code{xbeta} and \code{ybeta}.
+#' If unspecified, all predictors will be used.
 #' @param method Method to adjust for regression dilution in the regression of \code{ybeta[prune]} on \code{xbeta[prune]}.
 #' "Hedges-Olkin" applies a quick but approximate correction.
 #' "Simex" applies a more time-consuming, but accurate correction with proper allowance for its uncertainty.
@@ -47,14 +48,14 @@ indexevent = function (xbeta,
                        xse,
                        ybeta,
                        yse,
-                       prune=NULL,
+                       prune,
                        method=c("Hedges-Olkin","Simex"),
                        B=1000,
                        lambda=seq(0.25,5,0.25),
                        seed=2018) {
 
-  if (is.null(prune)) prune = 1:length(xbeta)
-  
+  #if (is.null(prune)) prune = 1:length(xbeta)
+
   # regression of ybeta on xbeta
   xbetaprune=xbeta[prune]
   xseprune=xse[prune]
