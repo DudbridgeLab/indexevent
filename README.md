@@ -1,5 +1,5 @@
 # indexevent
-INDEXEVENT is a package for adjusting association statistics for index event bias
+INDEXEVENT is a package for adjusting association statistics for index event bias.
 
 To install within R, devtools::install_github("DudbridgeLab/indexevent").
 
