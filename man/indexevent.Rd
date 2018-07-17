@@ -16,7 +16,8 @@ indexevent(xbeta, xse, ybeta, yse, prune, method = c("Hedges-Olkin", "Simex"),
 
 \item{yse}{Vector of standard errors of \code{ybeta}}
 
-\item{prune}{Vector containing the indices of an approximately independent subset of the predictors in \code{xbeta} and \code{ybeta}}
+\item{prune}{Vector containing the indices of an approximately independent subset of the predictors in \code{xbeta} and \code{ybeta}.
+If unspecified, all predictors will be used.}
 
 \item{method}{Method to adjust for regression dilution in the regression of \code{ybeta[prune]} on \code{xbeta[prune]}.
 "Hedges-Olkin" applies a quick but approximate correction.
