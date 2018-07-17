@@ -1,6 +1,6 @@
 Package: indexevent
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Adjustment for index event bias
 Version: 0.1.0
 Author: Frank Dudbridge
 Maintainer: Frank Dudbridge <frank.dudbridge@leicester.ac.uk>
