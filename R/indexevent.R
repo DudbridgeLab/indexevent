@@ -47,12 +47,14 @@ indexevent = function (xbeta,
                        xse,
                        ybeta,
                        yse,
-                       prune,
+                       prune=NULL,
                        method=c("Hedges-Olkin","Simex"),
                        B=1000,
                        lambda=seq(0.25,5,0.25),
                        seed=2018) {
 
+  if (is.null(prune)) prune = 1:length(xbeta)
+  
   # regression of ybeta on xbeta
   xbetaprune=xbeta[prune]
   xseprune=xse[prune]
