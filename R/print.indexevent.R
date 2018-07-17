@@ -3,6 +3,7 @@
 # After regressing effects on the subsequent event on the effects on the index event, print out the regression coefficient
 # and its confidence interval
 #
+#' @export
 print.indexevent = function(x) {
   print(paste("Coefficient",x$b))
   print(paste("Standard error",x$b.se))
