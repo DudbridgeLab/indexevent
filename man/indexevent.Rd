@@ -23,7 +23,7 @@ If unspecified, all predictors will be used.}
 "Hedges-Olkin" applies a quick but approximate correction.
 "Simex" applies a more time-consuming, but accurate correction with proper allowance for its uncertainty.}
 
-\item{B}{Number of simulations performed in each stage of the Simex adjustment}
+\item{B}{Number of simulations performed in each stage of the Simex adjustment.}
 
 \item{lambda}{Vector of lambdas for which the Simex simulations are performed.}
 
@@ -52,9 +52,15 @@ Effect sizes are on a linear scale, so could be the coefficients from linear reg
 Effects on the subsequent trait are regressed on the effects on the index trait.
 The regression is adjusted for sampling variation in the index trait effects,
 and the residuals then used to obtain adjusted effect sizes and standard errors for the subsequent trait.
+
 The regression should be performed on a subset of predictors that are independent.
 In the context of a genome-wide association study, these would be LD-pruned SNPs.
 In terms of the input parameters, the regression command is \code{lm(ybeta[prune]~xbeta[prune])}.
+
+The effects in \code{xbeta} and \code{ybeta} should be aligned for the same variables
+and the same direction prior to running \code{indexevent}.
+
+The default value of \code{B} is 10 to get a quick result, but higher values are recommended, eg 1000.
 }
 \references{
 Dudbridge F et al, Adjustment for index event bias in genome-wide association studies of subsequent events.  Submitted.
