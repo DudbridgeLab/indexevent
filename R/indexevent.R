@@ -9,15 +9,13 @@
 #' and the residuals then used to obtain adjusted effect sizes and standard errors for the subsequent trait.
 #' The regression should be performed on a subset of predictors that are independent.
 #' In the context of a genome-wide association study, these would be LD-pruned SNPs.
-#' In terms of the input parameters, the regression command is \code{lm(ybeta[yselect]~xbeta[xselect])}.
+#' In terms of the input parameters, the regression command is \code{lm(ybeta[prune]~xbeta[prune])}.
 #'
 #' @param xbeta Vector of effects on the index trait
 #' @param xse Vector of standard errors of \code{xbeta}
 #' @param ybeta Vector of effects on the subsequent trait
 #' @param yse Vector of standard errors of \code{ybeta}
-#' @param xselect Vector containing the indices of an approximately independent subset of the predictors in \code{xbeta}.
-#' If unspecified, all predictors will be used.
-#' @param yselect Vector containing the indices of an approximately independent subset of the predictors in \code{ybeta}.
+#' @param prune Vector containing the indices of an approximately independent subset of the predictors in \code{xbeta} and \code{ybeta}.
 #' If unspecified, all predictors will be used.
 #' @param method Method to adjust for regression dilution in the regression of \code{ybeta[prune]} on \code{xbeta[prune]}.
 #' "Hedges-Olkin" applies a quick but approximate correction.
@@ -51,21 +49,19 @@ indexevent = function (xbeta,
                        xse,
                        ybeta,
                        yse,
-                       xselect=NULL,
-                       yselect=NULL,
+                       prune=NULL,
                        method=c("Hedges-Olkin","Simex"),
                        B=10,
                        lambda=seq(0.25,5,0.25),
                        seed=2018) {
 
-  if (is.null(xselect)) xselect = 1:length(xbeta)
-  if (is.null(yselect)) yselect = 1:length(ybeta)
+  if (is.null(prune)) prune = 1:length(xbeta)
 
   # regression of ybeta on xbeta
-  xbetaprune=xbeta[xselect]
-  xseprune=xse[xselect]
-  ybetaprune=ybeta[yselect]
-  yseprune=yse[yselect]
+  xbetaprune=xbeta[prune]
+  xseprune=xse[prune]
+  ybetaprune=ybeta[prune]
+  yseprune=yse[prune]
 
   fit = lm(ybetaprune~xbetaprune)
   b.raw = fit$coef[2]
