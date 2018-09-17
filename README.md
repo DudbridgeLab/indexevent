@@ -7,7 +7,7 @@ To see a toy example, help(testData)
 
 For more details on usage, help(indexevent)
 
-This software has been tested in R version 3.4.1 running under Windows 7 and Linux on a standard desktop PC.
+This software has been tested in R 3.3.1 under Windows 7, and R 3.4.1 under CentOS Linux.  For most applications it will run on a standard desktop PC.
 
 ## Citation
 
