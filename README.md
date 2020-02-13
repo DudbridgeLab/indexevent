@@ -11,4 +11,4 @@ This software has been tested in R 3.3.1 under Windows 7, and R 3.4.1 under Cent
 
 ## Citation
 
-> Dudbridge F et al, Adjustment for index event bias in genome-wide association studies of subsequent events.  Submitted.
+> Dudbridge F et al, Adjustment for index event bias in genome-wide association studies of subsequent events.  Nat Commun 10:1561.
