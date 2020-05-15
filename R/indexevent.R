@@ -5,12 +5,13 @@
 #'
 #' Effect sizes are on a linear scale, so could be the coefficients from linear regression, or log odds ratios, or log hazard ratios.
 #' Effects on the subsequent trait are regressed on the effects on the index trait.
+#' By default, the regression is weighted by the inverse variances of the subsequent trait effects.
 #' The regression is adjusted for sampling variation in the index trait effects,
 #' and the residuals then used to obtain adjusted effect sizes and standard errors for the subsequent trait.
 #'
 #' The regression should be performed on a subset of predictors that are independent.
 #' In the context of a genome-wide association study, these would be LD-pruned SNPs.
-#' In terms of the input parameters, the regression command is \code{lm(ybeta[prune]~xbeta[prune])}.
+#' In terms of the input parameters, the regression command is \code{lm(ybeta[prune]~xbeta[prune],weights=1/yse[prune]^2)}.
 #'
 #' The effects in \code{xbeta} and \code{ybeta} should be aligned for the same variables
 #' and the same direction prior to running \code{indexevent}.
@@ -21,6 +22,7 @@
 #' @param xse Vector of standard errors of \code{xbeta}
 #' @param ybeta Vector of effects on the subsequent trait
 #' @param yse Vector of standard errors of \code{ybeta}
+#' @param weighted If true (default), regression of \code{ybeta} on \code{xbeta} is weighted tby the inverse of \code{yse^2}.
 #' @param prune Vector containing the indices of an approximately independent subset of the predictors in \code{xbeta} and \code{ybeta}.
 #' If unspecified, all predictors will be used.
 #' @param method Method to adjust for regression dilution in the regression of \code{ybeta[prune]} on \code{xbeta[prune]}.
@@ -48,13 +50,14 @@
 #' @author Frank Dudbridge
 #'
 #' @references
-#' Dudbridge F et al, Adjustment for index event bias in genome-wide association studies of subsequent events.  Submitted.
+#' Dudbridge F et al (2019) Adjustment for index event bias in genome-wide association studies of subsequent events.  Nature Communications 10:1561
 #'
 #' @export
 indexevent = function (xbeta,
                        xse,
                        ybeta,
                        yse,
+                       weighted=T,
                        prune=NULL,
                        method=c("Hedges-Olkin","Simex"),
                        B=10,
@@ -68,9 +71,11 @@ indexevent = function (xbeta,
   xseprune=xse[prune]
   ybetaprune=ybeta[prune]
   yseprune=yse[prune]
-
-  fit = lm(ybetaprune~xbetaprune)
-  b.raw = fit$coef[2]
+  if (weighted) weight = 1/yseprune^2
+  else weight = rep(1,length(prune))
+  
+  fit = lm(ybetaprune~xbetaprune,weights=weight)
+  b.raw = as.numeric(fit$coef[2])
 
   # Hedges-Olkin adjustment
   if (startsWith("hedges-olkin",tolower(method[1]))) {
@@ -84,22 +89,22 @@ indexevent = function (xbeta,
   if (startsWith("simex",tolower(method[1]))) {
     set.seed(seed)
     simex.estimates = fit$coef[2]
-    simex.variance.sandwich = (sum(xbetaprune)^2*sum(fit$res^2) - 2*length(xbetaprune)*sum(xbetaprune)*sum(xbetaprune*fit$res^2) +
-                                            length(xbetaprune)^2*sum(xbetaprune^2*fit$res^2)) /
-      (length(xbetaprune)*sum(xbetaprune^2)-sum(xbetaprune)^2)^2
+    simex.variance.sandwich = (sum(weight*xbetaprune)^2*sum(weight*fit$res^2) - 2*sum(weight)*sum(weight*xbetaprune)*sum(weight*xbetaprune*fit$res^2) +
+                                            sum(weight)^2*sum(weight*xbetaprune^2*fit$res^2)) /
+      (sum(weight)*sum(weight*xbetaprune^2)-sum(weight*xbetaprune)^2)^2
     progress = txtProgressBar(max=B*length(lambda),width=10,style=3)
     for(l in 1:length(lambda)) {
       simexcoef=rep(0,B)
       for(iter in 1:B) {
         simexdata = rnorm(length(xbetaprune), mean=xbetaprune, sd=xseprune*sqrt(lambda[l]))
-        simexfit = lm(ybetaprune~simexdata)
+        simexfit = lm(ybetaprune~simexdata,weights=weight)
         simexcoef[iter] = simexfit$coef[2]
         setTxtProgressBar(progress,(l-1)*B+iter)
       }
       simex.estimates = c(simex.estimates, mean(simexcoef))
-      svar=(sum(simexdata)^2*sum(simexfit$res^2) - 2*length(simexdata)*sum(simexdata)*sum(simexdata*simexfit$res^2) +
-              length(simexdata)^2*sum(simexdata^2*simexfit$res^2)) /
-        (length(simexdata)*sum(simexdata^2)-sum(simexdata)^2)^2
+      svar=(sum(weight*simexdata)^2*sum(weight*simexfit$res^2) - 2*sum(weight)*sum(weight*simexdata)*sum(weight*simexdata*simexfit$res^2) +
+              sum(weight)^2*sum(weight*simexdata^2*simexfit$res^2)) /
+        (sum(weight)*sum(weight*simexdata^2)-sum(weight*simexdata)^2)^2
       simex.variance.sandwich=c(simex.variance.sandwich,svar/B)
     }
     simex.estimates = cbind(c(0,lambda), simex.estimates, simex.variance.sandwich)
