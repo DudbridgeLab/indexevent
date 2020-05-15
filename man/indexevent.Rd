@@ -4,8 +4,19 @@
 \alias{indexevent}
 \title{Adjust association statistics for index event bias}
 \usage{
-indexevent(xbeta, xse, ybeta, yse, prune = NULL, method = c("Hedges-Olkin",
-  "Simex"), B = 10, lambda = seq(0.25, 5, 0.25), seed = 2018)
+indexevent(
+  xbeta,
+  xse,
+  ybeta,
+  yse,
+  weighted = T,
+  prune = NULL,
+  method = c("Hedges-Olkin", "Simex"),
+  tol = 1e-06,
+  B = 10,
+  lambda = seq(0.25, 5, 0.25),
+  seed = 2018
+)
 }
 \arguments{
 \item{xbeta}{Vector of effects on the index trait}
@@ -15,6 +26,8 @@ indexevent(xbeta, xse, ybeta, yse, prune = NULL, method = c("Hedges-Olkin",
 \item{ybeta}{Vector of effects on the subsequent trait}
 
 \item{yse}{Vector of standard errors of \code{ybeta}}
+
+\item{weighted}{If true (default), regression of \code{ybeta} on \code{xbeta} is weighted tby the inverse of \code{yse^2}.}
 
 \item{prune}{Vector containing the indices of an approximately independent subset of the predictors in \code{xbeta} and \code{ybeta}.
 If unspecified, all predictors will be used.}
@@ -50,12 +63,13 @@ this function adjusts the statistics for the subsequent trait for selection bias
 \details{
 Effect sizes are on a linear scale, so could be the coefficients from linear regression, or log odds ratios, or log hazard ratios.
 Effects on the subsequent trait are regressed on the effects on the index trait.
+By default, the regression is weighted by the inverse variances of the subsequent trait effects.
 The regression is adjusted for sampling variation in the index trait effects,
 and the residuals then used to obtain adjusted effect sizes and standard errors for the subsequent trait.
 
 The regression should be performed on a subset of predictors that are independent.
 In the context of a genome-wide association study, these would be LD-pruned SNPs.
-In terms of the input parameters, the regression command is \code{lm(ybeta[prune]~xbeta[prune])}.
+In terms of the input parameters, the regression command is \code{lm(ybeta[prune]~xbeta[prune],weights=1/yse[prune]^2)}.
 
 The effects in \code{xbeta} and \code{ybeta} should be aligned for the same variables
 and the same direction prior to running \code{indexevent}.
@@ -63,7 +77,7 @@ and the same direction prior to running \code{indexevent}.
 The default value of \code{B} is 10 to get a quick result, but higher values are recommended, eg 1000.
 }
 \references{
-Dudbridge F et al, Adjustment for index event bias in genome-wide association studies of subsequent events.  Submitted.
+Dudbridge F, Allen RJ, Sheehan NA, Schmidt AF, Lee JC, Jenkins RG, Wain LV, Hingorani AD, Patel RS (2019) Adjustment for index event bias in genome-wide association studies of subsequent events.  Nat Commun 10:1561
 }
 \author{
 Frank Dudbridge

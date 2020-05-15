@@ -20,18 +20,6 @@
 #' @export
 simexprofileCI = function(simex.estimates, variance.ratio) {
 
-  # sandwich variance estimates of the SIMEX estimates
-if (FALSE) {
-    variance.sandwich = NULL
-  for(i in simex.estimates[,1]) {
-    xbeta.simex = xbeta + rnorm(length(xbeta), sd=xse*sqrt(i))
-    tempfit = lm(ybeta~xbeta)
-    svar=(sum(xbeta.simex)^2*sum(tempfit$res^2) - 2*length(xbeta)*sum(xbeta.simex)*sum(xbeta.simex*tempfit$res^2) +
-            length(xbeta)^2*sum(xbeta.simex^2*tempfit$res^2)) /
-      (length(xbeta)*sum(xbeta.simex^2)-sum(xbeta.simex)^2)^2
-    variance.sandwich=c(variance.sandwich,svar)
-  }
-}
   profileFit = optimise(simexprofilellhd, c(-100,100), simex.estimates, variance.ratio)
 
   obj = function(p) (2*(simexprofilellhd(p, simex.estimates, variance.ratio) - profileFit$obj) - qchisq(.95,1))^2
