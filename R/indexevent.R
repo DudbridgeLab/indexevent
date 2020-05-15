@@ -50,7 +50,7 @@
 #' @author Frank Dudbridge
 #'
 #' @references
-#' Dudbridge F et al (2019) Adjustment for index event bias in genome-wide association studies of subsequent events.  Nature Communications 10:1561
+#' Dudbridge F, Allen RJ, Sheehan NA, Schmidt AF, Lee JC, Jenkins RG, Wain LV, Hingorani AD, Patel RS (2019) Adjustment for index event bias in genome-wide association studies of subsequent events.  Nat Commun 10:1561
 #'
 #' @export
 indexevent = function (xbeta,
