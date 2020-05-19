@@ -1,7 +1,7 @@
 Package: indexevent
 Type: Package
 Title: Adjustment for index event bias
-Version: 0.1.0
+Version: 0.1.1
 Author: Frank Dudbridge
 Maintainer: Frank Dudbridge <frank.dudbridge@leicester.ac.uk>
 Description: Adjusts association statistics for index event bias
