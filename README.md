@@ -1,4 +1,4 @@
-Please use Siyang Cai's [ColliderBias](https://github.com/SiyangCai/ColliderBias) package for our most up-to-date methods.
+### Please use Siyang Cai's [ColliderBias](https://github.com/SiyangCai/ColliderBias) package for our most up-to-date methods: [https://github.com/SiyangCai/ColliderBias](https://github.com/SiyangCai/ColliderBias)
 This package is retained for compatibility with our original paper.
 
 # INDEXEVENT
