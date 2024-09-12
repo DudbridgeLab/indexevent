@@ -22,12 +22,13 @@
 #' @param xse Vector of standard errors of \code{xbeta}
 #' @param ybeta Vector of effects on the subsequent trait
 #' @param yse Vector of standard errors of \code{ybeta}
-#' @param weighted If true (default), regression of \code{ybeta} on \code{xbeta} is weighted tby the inverse of \code{yse^2}.
+#' @param weighted If true (default), regression of \code{ybeta} on \code{xbeta} is weighted by the inverse of \code{yse^2}.
 #' @param prune Vector containing the indices of an approximately independent subset of the predictors in \code{xbeta} and \code{ybeta}.
 #' If unspecified, all predictors will be used.
-#' @param method Method to adjust for regression dilution in the regression of \code{ybeta[prune]} on \code{xbeta[prune]}.
-#' "Hedges-Olkin" applies a quick but approximate correction.
-#' "Simex" applies a more time-consuming, but accurate correction with proper allowance for its uncertainty.
+#' @param method Method to adjust for regression dilution (weak instruments) in the regression of \code{ybeta[prune]} on \code{xbeta[prune]}.
+#' "CWLS" (default) applies Corrected Weighted Least Squares from Cai et al (2022).
+#' "Hedges-Olkin" applies the correction from Dudbridge et al (2019), equivalent to CWLS for unweighted regression.
+#' "Simex" applies a more time-consuming correction which may be more accurate than CWLS.
 #' @param B Number of simulations performed in each stage of the Simex adjustment.
 #' @param lambda Vector of lambdas for which the Simex simulations are performed.
 #' @param seed Random number seed for the Simex adjustment
@@ -50,6 +51,8 @@
 #' @author Frank Dudbridge
 #'
 #' @references
+#' Cai S, Hartley A, Mahmoud O, Tilling K, Dudbridge F (2022) Adjusting for collider bias in genetic association studies using instrumental variable methods. Genetic Epidemiol 46:303-316
+#'
 #' Dudbridge F, Allen RJ, Sheehan NA, Schmidt AF, Lee JC, Jenkins RG, Wain LV, Hingorani AD, Patel RS (2019) Adjustment for index event bias in genome-wide association studies of subsequent events.  Nat Commun 10:1561
 #'
 #' @export
@@ -59,7 +62,8 @@ indexevent = function (xbeta,
                        yse,
                        weighted=T,
                        prune=NULL,
-                       method=c("Hedges-Olkin","Simex"),
+                       method=c("CWLS","Hedges-Olkin","Simex"),
+                       tol=1e-6,
                        B=10,
                        lambda=seq(0.25,5,0.25),
                        seed=2018) {
@@ -73,15 +77,27 @@ indexevent = function (xbeta,
   yseprune=yse[prune]
   if (weighted) weight = 1/yseprune^2
   else weight = rep(1,length(prune))
-  
+
   fit = lm(ybetaprune~xbetaprune,weights=weight)
   b.raw = as.numeric(fit$coef[2])
+  b.se = sqrt(as.numeric(vcov(fit)[2,2]))
+
+# Corrected weighted least squares
+  if (startsWith("cwls",tolower(method[1]))) {
+    sumWeight = sum(weight)
+    cwls.numer = sumWeight * sum(weight*xbetaprune*ybetaprune) - sum(weight*xbetaprune)*sum(weight*ybetaprune)
+    cwls.denom = sumWeight * sum(weight*xbetaprune^2) - sum(weight*xbetaprune)^2 - sumWeight*sum(weight*xseprune^2)
+    b = cwls.numer / cwls.denom
+    b.ci = c(b-qnorm(0.975)*b.se*b/b.raw, b+qnorm(0.975)*b.se*b/b.raw)
+    simex.estimates = NULL
+  }
 
   # Hedges-Olkin adjustment
   if (startsWith("hedges-olkin",tolower(method[1]))) {
     hedgesOlkin = var(xbetaprune) / (var(xbetaprune) - mean(xseprune^2))
     b = b.raw * hedgesOlkin
-    b.ci = rep(b,2)
+    #b.ci = rep(b,2)
+    b.ci = c(b-qnorm(0.975)*b.se*hedgesOlkin, b+qnorm(0.975)*b.se*hedgesOlkin)
     simex.estimates = NULL
   }
 
