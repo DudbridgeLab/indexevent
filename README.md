@@ -1,7 +1,7 @@
 ### Please use Siyang Cai's [ColliderBias](https://github.com/SiyangCai/ColliderBias) package for our most up-to-date methods.
 [https://github.com/SiyangCai/ColliderBias](https://github.com/SiyangCai/ColliderBias)
 
-This package is retained for compatibility with Dudbridge et al (2019).  The current version is 0.2.0 in which the default correction for weak instruments has been changed to CWLW (corrected weighted least squares) from Cai et al (2022).
+This package is retained for compatibility with Dudbridge et al (2019).  The current version is 0.2.0 in which the default correction for weak instruments has been changed to CWLS (corrected weighted least squares) from Cai et al (2022).
 
 # INDEXEVENT
 `INDEXEVENT` is a package for adjusting association statistics for index event bias.
