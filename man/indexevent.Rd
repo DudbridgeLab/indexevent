@@ -11,7 +11,7 @@ indexevent(
   yse,
   weighted = T,
   prune = NULL,
-  method = c("Hedges-Olkin", "Simex"),
+  method = c("CWLS", "Hedges-Olkin", "Simex"),
   tol = 1e-06,
   B = 10,
   lambda = seq(0.25, 5, 0.25),
@@ -27,14 +27,15 @@ indexevent(
 
 \item{yse}{Vector of standard errors of \code{ybeta}}
 
-\item{weighted}{If true (default), regression of \code{ybeta} on \code{xbeta} is weighted tby the inverse of \code{yse^2}.}
+\item{weighted}{If true (default), regression of \code{ybeta} on \code{xbeta} is weighted by the inverse of \code{yse^2}.}
 
 \item{prune}{Vector containing the indices of an approximately independent subset of the predictors in \code{xbeta} and \code{ybeta}.
 If unspecified, all predictors will be used.}
 
-\item{method}{Method to adjust for regression dilution in the regression of \code{ybeta[prune]} on \code{xbeta[prune]}.
-"Hedges-Olkin" applies a quick but approximate correction.
-"Simex" applies a more time-consuming, but accurate correction with proper allowance for its uncertainty.}
+\item{method}{Method to adjust for regression dilution (weak instruments) in the regression of \code{ybeta[prune]} on \code{xbeta[prune]}.
+"CWLS" (default) applies Corrected Weighted Least Squares from Cai et al (2022).
+"Hedges-Olkin" applies the correction from Dudbridge et al (2019), equivalent to CWLS for unweighted regression.
+"Simex" applies a more time-consuming correction which may be more accurate than CWLS.}
 
 \item{B}{Number of simulations performed in each stage of the Simex adjustment.}
 
@@ -77,6 +78,8 @@ and the same direction prior to running \code{indexevent}.
 The default value of \code{B} is 10 to get a quick result, but higher values are recommended, eg 1000.
 }
 \references{
+Cai S, Hartley A, Mahmoud O, Tilling K, Dudbridge F (2022) Adjusting for collider bias in genetic association studies using instrumental variable methods. Genetic Epidemiol 46:303-316
+
 Dudbridge F, Allen RJ, Sheehan NA, Schmidt AF, Lee JC, Jenkins RG, Wain LV, Hingorani AD, Patel RS (2019) Adjustment for index event bias in genome-wide association studies of subsequent events.  Nat Commun 10:1561
 }
 \author{
